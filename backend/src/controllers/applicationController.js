@@ -1,4 +1,5 @@
 const Application = require("../models/Application");
+const { analyzeApplication } = require("../services/applicationIntelligence");
 
 const getApplicationById = async (req, res) => {
   try {
@@ -13,10 +14,15 @@ const getApplicationById = async (req, res) => {
       });
     }
 
-    res.status(200).json({
-      success: true,
-      data: application
-    });
+   const intelligence = analyzeApplication(application);
+
+res.status(200).json({
+  success: true,
+  data: {
+    ...application.toObject(),
+    intelligence
+  }
+});
   } catch (error) {
     console.error("Error fetching application:", error);
 
