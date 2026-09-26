@@ -14,15 +14,15 @@ const getApplicationById = async (req, res) => {
       });
     }
 
-   const intelligence = analyzeApplication(application);
+    const intelligence = analyzeApplication(application);
 
-res.status(200).json({
-  success: true,
-  data: {
-    ...application.toObject(),
-    intelligence
-  }
-});
+    res.status(200).json({
+      success: true,
+      data: {
+        ...application.toObject(),
+        intelligence
+      }
+    });
   } catch (error) {
     console.error("Error fetching application:", error);
 

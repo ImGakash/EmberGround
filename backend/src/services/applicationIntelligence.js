@@ -1,3 +1,5 @@
+const { calculatePriorityScore } = require("./casePriority");
+
 const analyzeApplication = (application) => {
   const now = new Date();
 
@@ -120,6 +122,14 @@ const analyzeApplication = (application) => {
       `Your ${application.serviceName} application is currently being processed within the expected timeline, with approximately ${daysRemaining} days remaining.`;
   }
 
+  // Calculate priority score
+  const priority = calculatePriorityScore({
+    processingDays,
+    expectedDays,
+    status: application.status,
+    delayStatus
+  });
+
   return {
     processingDays,
     expectedDays,
@@ -130,7 +140,10 @@ const analyzeApplication = (application) => {
     message,
     reason,
     caseSummary,
-    recommendedAction
+    recommendedAction,
+
+    priorityScore: priority.score,
+    priorityLevel: priority.priorityLevel
   };
 };
 
