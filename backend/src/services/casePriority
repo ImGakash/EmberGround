@@ -1,0 +1,63 @@
+const calculatePriorityScore = ({
+  processingDays,
+  expectedDays,
+  status,
+  delayStatus
+}) => {
+  let score = 10;
+
+  // Processing time factor
+  if (processingDays > expectedDays) {
+    const delayedBy = processingDays - expectedDays;
+
+    score += Math.min(delayedBy * 3, 40);
+  } else if (processingDays >= expectedDays - 3) {
+    score += 15;
+  }
+
+  // Application status factor
+  if (status === "ACTION_REQUIRED") {
+    score += 35;
+  }
+
+  if (status === "UNDER_VERIFICATION") {
+    score += 10;
+  }
+
+  if (status === "APPROVED" || status === "COMPLETED") {
+    score = 5;
+  }
+
+  if (status === "REJECTED") {
+    score += 20;
+  }
+
+  // Delay factor
+  if (delayStatus === "DELAYED") {
+    score += 15;
+  }
+
+  if (delayStatus === "APPROACHING_DEADLINE") {
+    score += 10;
+  }
+
+  // Keep score between 0 and 100
+  score = Math.min(Math.max(score, 0), 100);
+
+  let priorityLevel = "LOW";
+
+  if (score >= 70) {
+    priorityLevel = "HIGH";
+  } else if (score >= 40) {
+    priorityLevel = "MEDIUM";
+  }
+
+  return {
+    score,
+    priorityLevel
+  };
+};
+
+module.exports = {
+  calculatePriorityScore
+};
