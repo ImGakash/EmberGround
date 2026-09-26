@@ -1,138 +1,180 @@
-const dns = require("dns");
-dns.setServers(["8.8.8.8", "1.1.1.1"]);
-
 const mongoose = require("mongoose");
-const dotenv = require("dotenv");
+const path = require("path");
+require("dotenv").config({ path: path.resolve(__dirname, "../../.env") });
 
-const Application = require("../models/Application");
-
-dotenv.config();
+const Application = require(
+  "../models/Application"
+);
 
 const applications = [
   {
-    applicationId: "BSP-2026-10001",
-    applicantName: "Rahul Kumar",
+    applicationId: "NGR-APP-001",
+
     serviceName: "Birth Certificate",
-    department: "Municipal Corporation",
+
     status: "UNDER_VERIFICATION",
-    delayStatus: "ON_TIME",
-    submittedDate: new Date("2026-09-18"),
-    lastUpdated: new Date("2026-09-23"),
+
+    submittedDate:
+      new Date("2026-09-18"),
+
+    lastUpdated:
+      new Date("2026-09-23"),
+
     expectedDays: 15,
-    requiredAction: null,
+
+    requiredAction: "",
+
     timeline: [
       {
         status: "SUBMITTED",
-        date: new Date("2026-09-18"),
-        description: "Application submitted successfully"
+
+        title: "Application submitted",
+
+        description:
+          "The application was submitted successfully.",
+
+        date:
+          new Date("2026-09-18")
       },
+
       {
         status: "UNDER_VERIFICATION",
-        date: new Date("2026-09-20"),
-        description: "Documents are being verified"
+
+        title: "Verification started",
+
+        description:
+          "The application entered the verification stage.",
+
+        date:
+          new Date("2026-09-23")
       }
     ]
   },
 
   {
-    applicationId: "BSP-2026-10482",
-    applicantName: "Priya Sharma",
-    serviceName: "Income Certificate",
-    department: "Revenue Department",
-    status: "UNDER_VERIFICATION",
-    delayStatus: "DELAYED",
-    submittedDate: new Date("2026-08-25"),
-    lastUpdated: new Date("2026-09-10"),
-    expectedDays: 15,
-    requiredAction: null,
-    timeline: [
-      {
-        status: "SUBMITTED",
-        date: new Date("2026-08-25"),
-        description: "Application submitted successfully"
-      },
-      {
-        status: "UNDER_VERIFICATION",
-        date: new Date("2026-08-28"),
-        description: "Application verification started"
-      }
-    ]
-  },
+    applicationId: "NGR-APP-002",
 
-  {
-    applicationId: "BSP-2026-10531",
-    applicantName: "Sneha Patil",
-    serviceName: "Caste Certificate",
-    department: "Revenue Department",
+    serviceName: "Government Service Application",
+
     status: "ACTION_REQUIRED",
-    delayStatus: "APPROACHING_DEADLINE",
-    submittedDate: new Date("2026-09-15"),
-    lastUpdated: new Date("2026-09-22"),
+
+    submittedDate:
+      new Date("2026-09-05"),
+
+    lastUpdated:
+      new Date("2026-09-20"),
+
     expectedDays: 15,
-    requiredAction: "Upload a clear copy of the required document",
+
+    requiredAction:
+      "Additional information may be required. Please check the official application communication.",
+
     timeline: [
       {
         status: "SUBMITTED",
-        date: new Date("2026-09-15"),
-        description: "Application submitted successfully"
+
+        title: "Application submitted",
+
+        description:
+          "The application was submitted successfully.",
+
+        date:
+          new Date("2026-09-05")
       },
+
       {
         status: "ACTION_REQUIRED",
-        date: new Date("2026-09-22"),
-        description: "Additional document is required"
+
+        title: "Action required",
+
+        description:
+          "The application indicates that additional action may be required.",
+
+        date:
+          new Date("2026-09-20")
       }
     ]
   },
 
   {
-    applicationId: "BSP-2026-10612",
-    applicantName: "Arjun Reddy",
-    serviceName: "Residence Certificate",
-    department: "Revenue Department",
+    applicationId: "NGR-APP-003",
+
+    serviceName: "Public Service Application",
+
     status: "APPROVED",
-    delayStatus: "ON_TIME",
-    submittedDate: new Date("2026-09-05"),
-    lastUpdated: new Date("2026-09-15"),
+
+    submittedDate:
+      new Date("2026-09-01"),
+
+    lastUpdated:
+      new Date("2026-09-12"),
+
     expectedDays: 15,
-    requiredAction: null,
+
+    requiredAction: "",
+
     timeline: [
       {
         status: "SUBMITTED",
-        date: new Date("2026-09-05"),
-        description: "Application submitted successfully"
+
+        title: "Application submitted",
+
+        description:
+          "The application was submitted successfully.",
+
+        date:
+          new Date("2026-09-01")
       },
+
       {
-        status: "UNDER_VERIFICATION",
-        date: new Date("2026-09-08"),
-        description: "Documents verified"
+        status: "UNDER_PROCESSING",
+
+        title: "Application processing",
+
+        description:
+          "The application entered processing.",
+
+        date:
+          new Date("2026-09-05")
       },
+
       {
         status: "APPROVED",
-        date: new Date("2026-09-15"),
-        description: "Application approved"
+
+        title: "Application approved",
+
+        description:
+          "The application reached an approved state.",
+
+        date:
+          new Date("2026-09-12")
       }
     ]
   }
 ];
 
-const seedDatabase = async () => {
+const seed = async () => {
   try {
-    await mongoose.connect(process.env.MONGO_URI);
+    await mongoose.connect(
+      process.env.MONGO_URI
+    );
 
-    console.log("MongoDB connected for seeding");
+    await Application.deleteMany({});
 
-    await Application.deleteMany();
+    await Application.insertMany(
+      applications
+    );
 
-    await Application.insertMany(applications);
+    console.log(
+      "Applications seeded successfully"
+    );
 
-    console.log("Demo applications inserted successfully ✅");
-
-    process.exit(0);
+    await mongoose.connection.close();
   } catch (error) {
-    console.error("Seeding failed ❌");
-    console.error(error.message);
+    console.error(error);
+
     process.exit(1);
   }
 };
 
-seedDatabase();
+seed();

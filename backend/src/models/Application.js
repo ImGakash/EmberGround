@@ -1,53 +1,80 @@
 const mongoose = require("mongoose");
 
+const timelineSchema = new mongoose.Schema(
+  {
+    status: {
+      type: String,
+      required: true
+    },
+    title: {
+      type: String,
+      required: true
+    },
+    description: {
+      type: String,
+      default: ""
+    },
+    date: {
+      type: Date,
+      required: true
+    }
+  },
+  {
+    _id: false
+  }
+);
+
+const statusHistorySchema = new mongoose.Schema(
+  {
+    status: {
+      type: String,
+      required: true
+    },
+    source: {
+      type: String,
+      required: true,
+      default: "local"
+    },
+    timestamp: {
+      type: Date,
+      required: true
+    },
+    remarks: {
+      type: String,
+      default: ""
+    }
+  },
+  {
+    _id: false
+  }
+);
+
 const applicationSchema = new mongoose.Schema(
   {
     applicationId: {
       type: String,
       required: true,
       unique: true,
-      trim: true
-    },
-
-    applicantName: {
-      type: String,
-      required: true,
-      trim: true
+      index: true
     },
 
     serviceName: {
       type: String,
-      required: true,
-      trim: true
-    },
-
-    department: {
-      type: String,
-      required: true,
-      trim: true
+      required: true
     },
 
     status: {
       type: String,
+      required: true,
       enum: [
         "SUBMITTED",
         "UNDER_VERIFICATION",
+        "UNDER_PROCESSING",
         "ACTION_REQUIRED",
         "APPROVED",
         "REJECTED",
         "COMPLETED"
-      ],
-      required: true
-    },
-
-    delayStatus: {
-      type: String,
-      enum: [
-        "ON_TIME",
-        "APPROACHING_DEADLINE",
-        "DELAYED"
-      ],
-      default: "ON_TIME"
+      ]
     },
 
     submittedDate: {
@@ -62,25 +89,31 @@ const applicationSchema = new mongoose.Schema(
 
     expectedDays: {
       type: Number,
-      required: true
+      required: true,
+      min: 0
     },
 
     requiredAction: {
       type: String,
-      default: null
+      default: ""
     },
 
-    timeline: [
-      {
-        status: String,
-        date: Date,
-        description: String
-      }
-    ]
+    timeline: {
+      type: [timelineSchema],
+      default: []
+    },
+
+    statusHistory: {
+      type: [statusHistorySchema],
+      default: []
+    }
   },
   {
     timestamps: true
   }
 );
 
-module.exports = mongoose.model("Application", applicationSchema);
+module.exports = mongoose.model(
+  "Application",
+  applicationSchema
+);
