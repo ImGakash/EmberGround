@@ -8,4 +8,4 @@ const router = express.Router();
 
 router.get("/:applicationId", getApplicationById);
 
-module.exports = router;
+module.exports = router;  
